@@ -99,6 +99,34 @@ class BT:
             return 1+self.noSibling(root.left)
         return self.noSibling(root.left)+self.noSibling(root.right)
         
+    def removeLeaf(self,root):
+        if root==None:
+            return 
+        if root.left==None and root.right==None:
+            return None 
+        root.left=self.removeLeaf(root.left)
+        root.right=self.removeLeaf(root.right)
+        return root
+    def mirror(self,root):
+        if root==None:
+            return
+
+        t1=self.mirror(root.right)
+        t2=self.mirror(root.left)
+        root.left=t1
+        root.right=t2
+        return root
+
+    def checkBalance(self,root):
+        if root==None:
+            return 0,True  
+        lh,isLeft=self.checkBalance(root.left)
+        rh,isRight=self.checkBalance(root.right)
+        h=1+max(lh,rh)
+        if abs(lh-rh)>=2:
+            return h,False 
+        else:
+            return h,True and isLeft and isRight
 root=0 
 t=BT()
 root=t.getInput(root)
@@ -113,4 +141,9 @@ t.inorder(root)
 # t.replaceDepth(root,0)
 # t.printAtDepth(root)
 # print(t.isPresent(root,5))
-print(t.noSibling(root))
+# print(t.noSibling(root))
+
+# root=t.removeLeaf0(root)
+# root=t.mirror(root)
+# t.inorder(root)
+print(t.checkBalance(root))
