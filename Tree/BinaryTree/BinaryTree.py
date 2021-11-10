@@ -127,10 +127,146 @@ class BT:
             return h,False 
         else:
             return h,True and isLeft and isRight
+
+    def diameter(self,root):
+        if root==None:
+            return 0
+        dia=self.height(root.left)+self.height(root.right)
+        lh=self.diameter(root.left)
+        rh=self.diameter(root.right)
+
+        if lh>dia:
+            return lh 
+        elif rh>dia:
+            return rh 
+        else:
+            return dia
+
+    def levelInput(self,root):
+        q=[]
+        n=int(input("Enter value : "))
+        root=Node(n)
+        q.append(root)
+
+        while len(q)>0:
+            i=q.pop(0)
+            n=int(input("Enter the value : "))
+            if n!=-1:
+                i.left=Node(n)
+                q.append(i.left)  
+            n=int(input("Enter the value : "))
+            if n!=-1:
+                i.right=Node(n)
+                q.append(i.right)   
+        return root  
+
+    def postorder(self,root):
+        if root==None:
+            return 
+        self.postorder(root.left)
+        self.postorder(root.right)
+        print(root.data)
+    def construct(self,inorder,preorder):
+        if len(preorder)<=0 or len(inorder)<=0:
+            return None 
+        root=Node(preorder[0])
+        c=0
+        for i in inorder:
+            if i==root.data:
+                break
+            c+=1
+
+
+        lin=inorder[:c]
+        rin=inorder[c+1:]
+
+        lpre=preorder[1:1+len(lin)]
+        rpre=preorder[1+len(lin):]
+
+        # print(lin,rin,lpre,rpre)
+
+        left=self.construct(lin,lpre)
+        right=self.construct(rin,rpre)
+
+        # if left is not None:
+        #     print(left.right)
+        #     self.inorder(left)
+        # if right is not None:
+        #     self.inorder(right)
+
+        root.left=left
+        root.right=right
+
+        return root
+
+    def duplicate(self,root):
+        if root==None:
+            return 
+        temp=root.left
+        root.left=Node(root.data)
+        root.left.left=temp
+
+        self.duplicate(root.left.left)
+        self.duplicate(root.right)
+        return root
+
+    def sumToLeaf(self,root,k,arr):
+        # print(arr)
+        if root==None:
+            return 0
+        
+        n=sum(arr)+root.data
+
+        if n==k:
+            arr.append(root.data)
+            print(arr)
+            return 0
+        elif n>k:
+            return 0
+        elif n<k:
+            temp1=arr.copy()
+            temp1.append(root.data)
+            temp2=arr.copy()
+            temp2.append(root.data)
+            self.sumToLeaf(root.right,k,temp1)+self.sumToLeaf(root.left,k,temp2)
+            return 0
+
+    def getDepth(self,root,n,d):
+        if root==None:
+            return None 
+        elif root.data==n:
+            return d 
+        v=self.getDepth(root.left,n,d+1)
+        if v is not None:
+            return v
+        v=self.getDepth(root.right,n,d+1)
+        if v is not None:
+            return v
+    
+    def atDistance(self,root,dt,to):
+        if to==None:
+            return 0
+        dt[to.data]=self.getDepth(root,to.data,0)
+        self.atDistance(root,dt,to.left)
+        self.atDistance(root,dt,to.right)
+        
+        return dt
+
+    def fromDist(self,targ,root,k):
+        dt=self.atDistance(root,{},root)
+        req=dt[targ]
+
+        for ke,v in dt.items():
+            if ke==targ:
+                continue
+            if v-req==k or v+req==k:
+                print(ke) 
+
+        
 root=0 
 t=BT()
-root=t.getInput(root)
-t.inorder(root)
+# root=t.levelInput(root)
+# t.inorder(root)
 
 # print(t.nnodes(root))
 # print(t.sumofnodes(root))
@@ -146,4 +282,13 @@ t.inorder(root)
 # root=t.removeLeaf0(root)
 # root=t.mirror(root)
 # t.inorder(root)
-print(t.checkBalance(root))
+# print(t.checkBalance(root))
+
+
+# print(t.diameter(root))
+root=t.construct([6,5,7,2,4,3,0,1,8],[3,5,6,2,7,4,1,0,8])
+# t.postorder(root)
+# root=t.duplicate(root)
+# t.sumToLeaf(root,7,[])
+# t.postorder(root)
+t.fromDist(5,root,2)
